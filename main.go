@@ -13,6 +13,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer db.Close()
+	GetCurrentManager(db)
+	GetEmployeeToCongratulate(db)
+	GetDepartmentsStatistic(db)
+
+}
+func GetCurrentManager(db *sql.DB) {
 
 	rows, err := db.Query("select dept_name, title, first_name, last_name, hire_date, salary from employees, dept_manager, departments, titles, salaries where employees.emp_no = dept_manager.emp_no and current_date()<dept_manager.to_date and departments.dept_no = dept_manager.dept_no and employees.emp_no = titles.emp_no and current_date()<titles.to_date and employees.emp_no = salaries.emp_no and current_date()< salaries.to_date")
 	if err != nil {
@@ -38,8 +45,11 @@ func main() {
 
 	}
 	fmt.Println("______________________________________________________")
+}
 
-	rows, err = db.Query("select dept_name, title, first_name, last_name, hire_date, ceil(( DateDiff(current_date(),employees.hire_date )/365 )) years_Workfrom from employees, dept_manager, departments, titles where employees.emp_no = dept_manager.emp_no and current_date()<dept_manager.to_date and departments.dept_no = dept_manager.dept_no and employees.emp_no = titles.emp_no and current_date()<titles.to_date and  month( employees.hire_date)=month(current_date()) union select dept_name, title, first_name, last_name, hire_date, ceil(( DateDiff(current_date(),employees.hire_date )/365 ))years_Work from employees, dept_emp, departments, titles where employees.emp_no = dept_emp.emp_no and departments.dept_no = dept_emp.dept_no and employees.emp_no = titles.emp_no and current_date()<titles.to_date and  month( employees.hire_date)=month(current_date())")
+func GetEmployeeToCongratulate(db *sql.DB) {
+
+	rows, err := db.Query("select dept_name, title, first_name, last_name, hire_date, ceil(( DateDiff(current_date(),employees.hire_date )/365 )) years_Workfrom from employees, dept_manager, departments, titles where employees.emp_no = dept_manager.emp_no and current_date()<dept_manager.to_date and departments.dept_no = dept_manager.dept_no and employees.emp_no = titles.emp_no and current_date()<titles.to_date and  month( employees.hire_date)=month(current_date()) union select dept_name, title, first_name, last_name, hire_date, ceil(( DateDiff(current_date(),employees.hire_date )/365 ))years_Work from employees, dept_emp, departments, titles where employees.emp_no = dept_emp.emp_no and departments.dept_no = dept_emp.dept_no and employees.emp_no = titles.emp_no and current_date()<titles.to_date and  month( employees.hire_date)=month(current_date())")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -62,8 +72,9 @@ func main() {
 
 	}
 	fmt.Println("______________________________________________________")
-
-	rows, err = db.Query("select dept_name,count(*),SUM(salary) from employees, dept_manager, departments, titles,salaries where employees.emp_no = dept_manager.emp_no and current_date()<dept_manager.to_date  and departments.dept_no = dept_manager.dept_no and employees.emp_no = titles.emp_no and current_date()<titles.to_date and employees.emp_no=salaries.emp_no and current_date()< salaries.to_date group by dept_name union select dept_name,count(*),SUM(salary) from employees, dept_emp, departments, titles,salaries where employees.emp_no = dept_emp.emp_no  and current_date()<dept_emp.to_date and departments.dept_no = dept_emp.dept_no  and employees.emp_no = titles.emp_no and current_date()<titles.to_date and employees.emp_no=salaries.emp_no and current_date()< salaries.to_date group by dept_name")
+}
+func GetDepartmentsStatistic(db *sql.DB) {
+	rows, err := db.Query("select dept_name,count(*),SUM(salary) from employees, dept_manager, departments, titles,salaries where employees.emp_no = dept_manager.emp_no and current_date()<dept_manager.to_date  and departments.dept_no = dept_manager.dept_no and employees.emp_no = titles.emp_no and current_date()<titles.to_date and employees.emp_no=salaries.emp_no and current_date()< salaries.to_date group by dept_name union select dept_name,count(*),SUM(salary) from employees, dept_emp, departments, titles,salaries where employees.emp_no = dept_emp.emp_no  and current_date()<dept_emp.to_date and departments.dept_no = dept_emp.dept_no  and employees.emp_no = titles.emp_no and current_date()<titles.to_date and employees.emp_no=salaries.emp_no and current_date()< salaries.to_date group by dept_name")
 	if err != nil {
 		log.Fatal(err)
 	}
